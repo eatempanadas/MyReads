@@ -7,6 +7,15 @@ import './App.css'
 
 class BooksApp extends Component {
   state = {
+    books: [],
+  }
+  componentDidMount() {
+    BooksAPI.getAll()
+      .then((books) => {
+        this.setState(() => ({
+          books
+        }))
+      })
   }
 
   render() {
@@ -18,6 +27,7 @@ class BooksApp extends Component {
         )} />
         <Route path='/search' render={() => (
           <SearchReads
+            books={this.state.books}
           />
         )} />
       </div>
