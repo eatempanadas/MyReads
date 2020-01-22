@@ -8,12 +8,24 @@ import './App.css'
 class BooksApp extends Component {
   state = {
     books: [],
+    currentlyReadingBooks: [],
+    wantToReadBooks: [],
+    readBooks: []
   }
   componentDidMount() {
     BooksAPI.getAll()
       .then((books) => {
         this.setState(() => ({
-          books
+          books,
+          currentlyReadingBooks: books.filter((b) => (
+            b.shelf === 'currentlyReading'
+          )),
+          wantToReadBooks: books.filter((b) => (
+            b.shelf === 'wantToRead'
+          )),
+          readBooks: books.filter((b) => (
+            b.shelf === 'read'
+          ))
         }))
       })
   }
@@ -23,6 +35,9 @@ class BooksApp extends Component {
       <div className="app">
         <Route exact path='/' render={() => (
           <ViewListedReads
+            currentlyReadingBooks={this.state.currentlyReadingBooks}
+            wantToReadBooks={this.state.wantToReadBooks}
+            readBooks={this.state.readBooks}
           />
         )} />
         <Route path='/search' render={() => (

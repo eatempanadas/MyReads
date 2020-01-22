@@ -20,7 +20,7 @@ class SearchReads extends Component {
         const showingBooks = query === ''
             ? books
             : books.filter((c) => (
-                c.authors[0].toLowerCase().includes(query.toLowerCase())
+                c.authors[0].toLowerCase().includes(query.toLowerCase()) || c.title.toLowerCase().includes(query.toLowerCase())
             ))
         return(
             <div className="search-books">
@@ -57,7 +57,7 @@ class SearchReads extends Component {
                                             style={{
                                                 width: 128,
                                                 height: 193,
-                                                backgroundImage: `url(${book.previewLink})`
+                                                backgroundImage: `url(${book.imageLinks.thumbnail})`
                                             }}></div>
                                         <div className="book-shelf-changer">
                                             <select>
