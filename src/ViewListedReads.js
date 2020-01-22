@@ -6,13 +6,14 @@ class ViewListedReads extends Component {
     static propType = {
         currentlyReadingBooks: PropTypes.array.isRequired,
         wantToReadBooks: PropTypes.array.isRequired,
-        readBooks: PropTypes.array.isRequired
+        readBooks: PropTypes.array.isRequired,
+        onUpdateBook: PropTypes.func.isRequired
     }
     state = {
 
     }
     render() {
-        const { currentlyReadingBooks, wantToReadBooks, readBooks } = this.props
+        const { currentlyReadingBooks, wantToReadBooks, readBooks, onUpdateBook } = this.props
         return(
             <div className="list-books">
                 <div className="list-books-title">
@@ -36,7 +37,9 @@ class ViewListedReads extends Component {
                                                         backgroundImage: `url(${book.imageLinks.thumbnail})`
                                                     }}></div>
                                                 <div className="book-shelf-changer">
-                                                    <select>
+                                                    <select
+                                                        value={book.shelf}
+                                                        onChange={(event) => onUpdateBook(book, event.target.value)}>
                                                         <option value="move" disabled>Move to...</option>
                                                         <option value="currentlyReading">Currently Reading</option>
                                                         <option value="wantToRead">Want to Read</option>
@@ -69,7 +72,9 @@ class ViewListedReads extends Component {
                                                         backgroundImage: `url(${book.imageLinks.thumbnail})`
                                                     }}></div>
                                                 <div className="book-shelf-changer">
-                                                    <select>
+                                                    <select
+                                                        value={book.shelf}
+                                                        onChange={(event) => onUpdateBook(book, event.target.value)}>
                                                         <option value="move" disabled>Move to...</option>
                                                         <option value="currentlyReading">Currently Reading</option>
                                                         <option value="wantToRead">Want to Read</option>
@@ -102,7 +107,9 @@ class ViewListedReads extends Component {
                                                         backgroundImage: `url(${book.imageLinks.thumbnail})`
                                                     }}></div>
                                                 <div className="book-shelf-changer">
-                                                    <select>
+                                                    <select
+                                                        value={book.shelf}
+                                                        onChange={(event) => onUpdateBook(book, event.target.value)}>
                                                         <option value="move" disabled>Move to...</option>
                                                         <option value="currentlyReading">Currently Reading</option>
                                                         <option value="wantToRead">Want to Read</option>

@@ -7,7 +7,7 @@ import './App.css'
 
 class BooksApp extends Component {
   state = {
-    books: [],
+    queryBooks: [],
     currentlyReadingBooks: [],
     wantToReadBooks: [],
     readBooks: []
@@ -16,7 +16,6 @@ class BooksApp extends Component {
     BooksAPI.getAll()
       .then((books) => {
         this.setState(() => ({
-          books,
           currentlyReadingBooks: books.filter((b) => (
             b.shelf === 'currentlyReading'
           )),
@@ -30,6 +29,33 @@ class BooksApp extends Component {
       })
   }
 
+  updateBook = (book, shelf) => {
+    BooksAPI.update(book, shelf)
+      .then((resp) => {
+        book.shelf = shelf;
+        this.setState((currentState) => ({
+          currentlyReadingBooks: currentState.books.filter((b) => (
+            resp.currentlyReading.includes(b.id)
+          )),
+          wantToReadBooks: currentState.books.filter((b) => (
+            resp.wantToRead.includes(b.id)
+          )),
+          readBooks: currentState.books.filter((b) => (
+            resp.read.includes(b.id)
+          ))
+        }))
+      })
+  }
+
+  queryBook = (query) => {
+    BooksAPI.search(query)
+      .then((resp) => {
+        this.setState(() => ({
+          queryBooks: resp
+        }))
+      })
+  }
+
   render() {
     return (
       <div className="app">
@@ -38,11 +64,21 @@ class BooksApp extends Component {
             currentlyReadingBooks={this.state.currentlyReadingBooks}
             wantToReadBooks={this.state.wantToReadBooks}
             readBooks={this.state.readBooks}
+            onUpdateBook={(book, shelf) => {
+              this.updateBook(book, shelf)
+            }}
           />
         )} />
-        <Route path='/search' render={() => (
+        <Route path='/search' render={({ history }) => (
           <SearchReads
-            books={this.state.books}
+            queryBooks={this.state.queryBooks}
+            onUpdateBook={(book, shelf) => {
+              this.updateBook(book, shelf)
+              history.push('/')
+            }}
+            onQueryBooks={(query) => {
+              this.queryBook(query)
+            }}
           />
         )} />
       </div>

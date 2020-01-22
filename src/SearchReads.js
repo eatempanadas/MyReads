@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom'
 
 class SearchReads extends Component {
     static propType = {
-        books: PropTypes.array.isRequired
+        queryBooks: PropTypes.array.isRequired
     }
     state = {
         query: ''
@@ -13,15 +13,13 @@ class SearchReads extends Component {
         this.setState(() => ({
             query: value.trim()
         }))
+        if (this.state.query) {
+            this.props.onQueryBooks('Android')
+        }
     }
     render() {
         const { query } = this.state
-        const { books } = this.props
-        const showingBooks = query === ''
-            ? books
-            : books.filter((c) => (
-                c.authors[0].toLowerCase().includes(query.toLowerCase()) || c.title.toLowerCase().includes(query.toLowerCase())
-            ))
+        const { queryBooks, onUpdateBook, onQueryBooks } = this.props
         return(
             <div className="search-books">
                 <div className="search-books-bar">
@@ -43,12 +41,11 @@ class SearchReads extends Component {
                         placeholder="Search by title or author"
                         value={query}
                         onChange={(event) => this.updateQuery(event.target.value)}/>
-
                     </div>
                 </div>
                 <div className="search-books-results">
                     <ol className="books-grid">
-                        {showingBooks.map((book) => (
+                        {queryBooks.map((book) => (
                             <li key={book.id} className='book-item'>
                                 <div className="book">
                                     <div className="book-top">
@@ -60,7 +57,9 @@ class SearchReads extends Component {
                                                 backgroundImage: `url(${book.imageLinks.thumbnail})`
                                             }}></div>
                                         <div className="book-shelf-changer">
-                                            <select>
+                                            <select
+                                                value={book.shelf}
+                                                onChange={(event) => onUpdateBook(book, event.target.value)}>
                                                 <option value="move" disabled>Move to...</option>
                                                 <option value="currentlyReading">Currently Reading</option>
                                                 <option value="wantToRead">Want to Read</option>
