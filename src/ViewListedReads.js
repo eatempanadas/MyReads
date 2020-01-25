@@ -9,9 +9,6 @@ class ViewListedReads extends Component {
         readBooks: PropTypes.array.isRequired,
         onUpdateBook: PropTypes.func.isRequired
     }
-    state = {
-
-    }
     render() {
         const { currentlyReadingBooks, wantToReadBooks, readBooks, onUpdateBook } = this.props
         return(
@@ -49,7 +46,7 @@ class ViewListedReads extends Component {
                                                 </div>
                                             </div>
                                             <div className="book-title">{book.title}</div>
-                                            <div className="book-authors">{book.authors[0]}</div>
+                                            <div className="book-title">{book.authors ? book.authors.toString() : 'None'}</div>
                                         </div>
                                     </li>
                                 ))}
@@ -84,7 +81,7 @@ class ViewListedReads extends Component {
                                                 </div>
                                             </div>
                                             <div className="book-title">{book.title}</div>
-                                            <div className="book-authors">{book.authors[0]}</div>
+                                            <div className="book-title">{book.authors ? book.authors.toString() : 'None'}</div>
                                         </div>
                                     </li>
                                 ))}
@@ -119,7 +116,7 @@ class ViewListedReads extends Component {
                                                 </div>
                                             </div>
                                             <div className="book-title">{book.title}</div>
-                                            <div className="book-authors">{book.authors[0]}</div>
+                                            <div className="book-title">{book.authors ? book.authors.toString() : 'None'}</div>
                                         </div>
                                     </li>
                                 ))}

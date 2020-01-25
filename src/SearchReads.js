@@ -1,25 +1,49 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
+import * as BooksAPI from './BooksAPI'
 import {Link} from 'react-router-dom'
 
 class SearchReads extends Component {
     static propType = {
-        queryBooks: PropTypes.array.isRequired
+        currentlyReadingBooks: PropTypes.array.isRequired,
+        wantToReadBooks: PropTypes.array.isRequired,
+        readBooks: PropTypes.array.isRequired,
+        onUpdateBook: PropTypes.func.isRequired
     }
     state = {
-        query: ''
+        query: '',
+        queryBooks: []
     }
     updateQuery = (value) => {
         this.setState(() => ({
-            query: value.trim()
+            query: value
         }))
-        if (this.state.query) {
-            this.props.onQueryBooks('Android')
-        }
+        BooksAPI.search(value)
+          .then((resp) => {
+            let books = resp;
+            if(!resp || resp.error) {
+                books = []
+            } else {
+                for (const book of books) {
+                    if (this.props.currentlyReadingBooks.includes(book.id)) {
+                        book.shelf = 'currentlyReading'
+                    } else if (this.props.wantToReadBooks.includes(book.id)) {
+                        book.shelf = 'wantToRead'
+                    } else if (this.props.readBooks.includes(book.id)) {
+                        book.shelf = 'read'
+                    } else {
+                        book.shelf = 'none'
+                    }
+                }
+            }
+            this.setState(() => ({
+              queryBooks: books
+            }))
+        })
     }
     render() {
-        const { query } = this.state
-        const { queryBooks, onUpdateBook, onQueryBooks } = this.props
+        const { queryBooks, query } = this.state
+        const { onUpdateBook } = this.props
         return(
             <div className="search-books">
                 <div className="search-books-bar">
@@ -28,14 +52,6 @@ class SearchReads extends Component {
                             <button className="close-search">Close</button>
                     </Link>
                     <div className="search-books-input-wrapper">
-                    {/*
-                    NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                    You can find these search terms here:
-                    https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-                    However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                    you don't find a specific author or title. Every search is limited by search terms.
-                    */}
                     <input
                         type="text"
                         placeholder="Search by title or author"
@@ -45,7 +61,7 @@ class SearchReads extends Component {
                 </div>
                 <div className="search-books-results">
                     <ol className="books-grid">
-                        {queryBooks.map((book) => (
+                        {queryBooks.length > 1 ? queryBooks.map((book) => (
                             <li key={book.id} className='book-item'>
                                 <div className="book">
                                     <div className="book-top">
@@ -54,7 +70,7 @@ class SearchReads extends Component {
                                             style={{
                                                 width: 128,
                                                 height: 193,
-                                                backgroundImage: `url(${book.imageLinks.thumbnail})`
+                                                backgroundImage: `url(${book.imageLinks ? book.imageLinks.thumbnail : ''})`
                                             }}></div>
                                         <div className="book-shelf-changer">
                                             <select
@@ -69,10 +85,10 @@ class SearchReads extends Component {
                                         </div>
                                     </div>
                                     <div className="book-title">{book.title}</div>
-                                    <div className="book-authors">{book.authors[0]}</div>
+                                    <div className="book-title">{book.authors ? book.authors.toString() : 'None'}</div>
                                 </div>
                             </li>
-                        ))}
+                        )) : <p>No results.</p>}
                     </ol>
                 </div>
           </div>

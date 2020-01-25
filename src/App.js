@@ -7,15 +7,20 @@ import './App.css'
 
 class BooksApp extends Component {
   state = {
-    queryBooks: [],
+    books: [],
     currentlyReadingBooks: [],
     wantToReadBooks: [],
     readBooks: []
   }
   componentDidMount() {
+    this.getAllBooks()
+  }
+
+  getAllBooks = () => {
     BooksAPI.getAll()
       .then((books) => {
         this.setState(() => ({
+          books: books,
           currentlyReadingBooks: books.filter((b) => (
             b.shelf === 'currentlyReading'
           )),
@@ -32,7 +37,12 @@ class BooksApp extends Component {
   updateBook = (book, shelf) => {
     BooksAPI.update(book, shelf)
       .then((resp) => {
-        book.shelf = shelf;
+        if(book.shelf === 'none' && shelf !== 'none') {
+          book.shelf = shelf;
+          this.state.books.push(book)
+        } else {
+          book.shelf = shelf;
+        }
         this.setState((currentState) => ({
           currentlyReadingBooks: currentState.books.filter((b) => (
             resp.currentlyReading.includes(b.id)
@@ -43,15 +53,6 @@ class BooksApp extends Component {
           readBooks: currentState.books.filter((b) => (
             resp.read.includes(b.id)
           ))
-        }))
-      })
-  }
-
-  queryBook = (query) => {
-    BooksAPI.search(query)
-      .then((resp) => {
-        this.setState(() => ({
-          queryBooks: resp
         }))
       })
   }
@@ -71,13 +72,18 @@ class BooksApp extends Component {
         )} />
         <Route path='/search' render={({ history }) => (
           <SearchReads
-            queryBooks={this.state.queryBooks}
+            currentlyReadingBooks={this.state.currentlyReadingBooks.map((book) => (
+              book.id
+            ))}
+            wantToReadBooks={this.state.wantToReadBooks.map((book) => (
+              book.id
+            ))}
+            readBooks={this.state.readBooks.map((book) => (
+              book.id
+            ))}
             onUpdateBook={(book, shelf) => {
               this.updateBook(book, shelf)
               history.push('/')
-            }}
-            onQueryBooks={(query) => {
-              this.queryBook(query)
             }}
           />
         )} />
